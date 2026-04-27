@@ -137,79 +137,43 @@ opacity:.9;
 <div class="topo">
 <h1>🚀 SÔNIC PRIME</h1>
 <p>Gestão Inteligente</p>
-<button class="botao">+ Novo Produto</button>
+# SUBSTITUA apenas o botão antigo por este:
+
+<button class="botao" onclick="abrirModal()">+ Novo Produto</button>
+
+
+# COLE antes de </body>:
+
+<div id="modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,.45); padding:20px;">
+  <div style="max-width:500px; margin:50px auto; background:white; padding:25px; border-radius:18px;">
+    
+    <h2 style="margin-bottom:15px;">Cadastrar Produto</h2>
+
+    <input id="nome" placeholder="Nome do produto" style="width:100%; padding:12px; margin-bottom:10px;">
+    
+    <input id="quantidade" placeholder="Quantidade" type="number" style="width:100%; padding:12px; margin-bottom:10px;">
+    
+    <input id="preco" placeholder="Preço" type="number" step="0.01" style="width:100%; padding:12px; margin-bottom:10px;">
+    
+    <input id="categoria" placeholder="Categoria" style="width:100%; padding:12px; margin-bottom:15px;">
+
+    <button class="botao" onclick="salvarProduto()">Salvar</button>
+    <button class="botao" onclick="fecharModal()" style="background:#777;">Fechar</button>
+
+  </div>
 </div>
 
-<div class="grid">
+<script>
+function abrirModal(){
+ document.getElementById("modal").style.display="block";
+}
 
-<div class="card">
-<h3>Total Produtos</h3>
-<div class="numero">38</div>
-</div>
+function fecharModal(){
+ document.getElementById("modal").style.display="none";
+}
 
-<div class="card">
-<h3>Itens em Estoque</h3>
-<div class="numero">524</div>
-</div>
-
-<div class="card">
-<h3>Entradas Hoje</h3>
-<div class="numero">12</div>
-</div>
-
-<div class="card">
-<h3>Saídas Hoje</h3>
-<div class="numero">7</div>
-</div>
-
-</div>
-
-<div class="tabela">
-<table>
-<thead>
-<tr>
-<th>Produto</th>
-<th>Quantidade</th>
-<th>Status</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>Teclado USB</td>
-<td>42</td>
-<td>Normal</td>
-</tr>
-
-<tr>
-<td>Mouse Gamer</td>
-<td>18</td>
-<td>Baixo</td>
-</tr>
-
-<tr>
-<td>Monitor 24"</td>
-<td>9</td>
-<td>Crítico</td>
-</tr>
-
-<tr>
-<td>Cadeira Office</td>
-<td>31</td>
-<td>Normal</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-</div>
-</body>
-</html>
-"""
-
-@app.route("/")
-def inicio():
-    return render_template_string(HTML)
-
-if __name__ == "__main__":
-    app.run(debug=True)
+function salvarProduto(){
+ alert("Produto salvo com sucesso!");
+ fecharModal();
+}
+</script>
