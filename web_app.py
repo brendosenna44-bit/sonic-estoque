@@ -1,110 +1,215 @@
-from flask import Flask, render_template_string, request, redirect, url_for
-import sqlite3
+from flask import Flask, render_template_string
 
 app = Flask(__name__)
 
-# ===== BANCO =====
-conn = sqlite3.connect("estoque.db", check_same_thread=False)
-cursor = conn.cursor()
-
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS produtos (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nome TEXT,
-    quantidade INTEGER
-)
-""")
-conn.commit()
-
-# ===== HTML (INTERFACE MOBILE) =====
 HTML = """
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-<title>SÔNIC 1.0</title>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SÔNIC PRIME</title>
+
 <style>
-body { font-family: Arial; background:#121212; color:white; text-align:center; }
-.container { width:90%; margin:auto; }
-input { padding:10px; margin:5px; width:90%; border-radius:5px; border:none; }
-button { padding:10px; width:95%; margin:5px; border:none; border-radius:5px; }
-.green { background:#00c853; }
-.red { background:#d50000; color:white; }
-.blue { background:#2962ff; color:white; }
-table { width:100%; margin-top:20px; }
-th, td { padding:8px; border-bottom:1px solid #444; }
+:root{
+    --bg:#f5f7fa;
+    --card:#ffffff;
+    --text:#111827;
+    --sub:#6b7280;
+    --line:#e5e7eb;
+    --primary:#2563eb;
+}
+
+@media (prefers-color-scheme: dark){
+:root{
+    --bg:#0f172a;
+    --card:#111827;
+    --text:#f9fafb;
+    --sub:#9ca3af;
+    --line:#1f2937;
+    --primary:#3b82f6;
+}
+}
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+background:var(--bg);
+color:var(--text);
+padding:20px;
+}
+
+.container{
+max-width:1100px;
+margin:auto;
+}
+
+.topo{
+background:var(--card);
+padding:25px;
+border-radius:18px;
+box-shadow:0 10px 25px rgba(0,0,0,.08);
+margin-bottom:20px;
+}
+
+.topo h1{
+font-size:32px;
+margin-bottom:6px;
+}
+
+.topo p{
+color:var(--sub);
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+margin-bottom:20px;
+}
+
+.card{
+background:var(--card);
+padding:20px;
+border-radius:18px;
+box-shadow:0 10px 25px rgba(0,0,0,.06);
+}
+
+.card h3{
+font-size:15px;
+color:var(--sub);
+margin-bottom:8px;
+}
+
+.numero{
+font-size:30px;
+font-weight:bold;
+}
+
+.tabela{
+background:var(--card);
+padding:20px;
+border-radius:18px;
+box-shadow:0 10px 25px rgba(0,0,0,.06);
+overflow:auto;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:14px;
+text-align:left;
+border-bottom:1px solid var(--line);
+}
+
+th{
+color:var(--sub);
+font-size:14px;
+}
+
+.botao{
+background:var(--primary);
+color:white;
+padding:12px 18px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+margin-top:15px;
+}
+
+.botao:hover{
+opacity:.9;
+}
 </style>
 </head>
+
 <body>
-
 <div class="container">
-<h2>🚀 SÔNIC 1.0</h2>
 
-<form method="POST" action="/add">
-<input name="nome" placeholder="Produto">
-<input name="qtd" placeholder="Quantidade">
-<button class="green">Cadastrar</button>
-</form>
+<div class="topo">
+<h1>🚀 SÔNIC PRIME</h1>
+<p>Gestão Inteligente</p>
+<button class="botao">+ Novo Produto</button>
+</div>
 
-<form method="POST" action="/entrada">
-<input name="nome" placeholder="Produto">
-<input name="qtd" placeholder="Entrada">
-<button class="blue">Entrada</button>
-</form>
+<div class="grid">
 
-<form method="POST" action="/saida">
-<input name="nome" placeholder="Produto">
-<input name="qtd" placeholder="Saída">
-<button class="red">Saída</button>
-</form>
+<div class="card">
+<h3>Total Produtos</h3>
+<div class="numero">38</div>
+</div>
 
-<h3>Estoque</h3>
-<table>
-<tr><th>Nome</th><th>Qtd</th></tr>
-{% for p in produtos %}
-<tr><td>{{p[0]}}</td><td>{{p[1]}}</td></tr>
-{% endfor %}
-</table>
+<div class="card">
+<h3>Itens em Estoque</h3>
+<div class="numero">524</div>
+</div>
+
+<div class="card">
+<h3>Entradas Hoje</h3>
+<div class="numero">12</div>
+</div>
+
+<div class="card">
+<h3>Saídas Hoje</h3>
+<div class="numero">7</div>
+</div>
 
 </div>
 
+<div class="tabela">
+<table>
+<thead>
+<tr>
+<th>Produto</th>
+<th>Quantidade</th>
+<th>Status</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Teclado USB</td>
+<td>42</td>
+<td>Normal</td>
+</tr>
+
+<tr>
+<td>Mouse Gamer</td>
+<td>18</td>
+<td>Baixo</td>
+</tr>
+
+<tr>
+<td>Monitor 24"</td>
+<td>9</td>
+<td>Crítico</td>
+</tr>
+
+<tr>
+<td>Cadeira Office</td>
+<td>31</td>
+<td>Normal</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
 </body>
 </html>
 """
 
-# ===== ROTAS =====
 @app.route("/")
-def index():
-    cursor.execute("SELECT nome, quantidade FROM produtos")
-    produtos = cursor.fetchall()
-    return render_template_string(HTML, produtos=produtos)
+def inicio():
+    return render_template_string(HTML)
 
-@app.route("/add", methods=["POST"])
-def add():
-    nome = request.form["nome"]
-    qtd = int(request.form["qtd"])
-
-    cursor.execute("INSERT INTO produtos (nome, quantidade) VALUES (?,?)", (nome, qtd))
-    conn.commit()
-    return redirect("/")
-
-@app.route("/entrada", methods=["POST"])
-def entrada():
-    nome = request.form["nome"]
-    qtd = int(request.form["qtd"])
-
-    cursor.execute("UPDATE produtos SET quantidade = quantidade + ? WHERE nome=?", (qtd, nome))
-    conn.commit()
-    return redirect("/")
-
-@app.route("/saida", methods=["POST"])
-def saida():
-    nome = request.form["nome"]
-    qtd = int(request.form["qtd"])
-
-    cursor.execute("UPDATE produtos SET quantidade = quantidade - ? WHERE nome=?", (qtd, nome))
-    conn.commit()
-    return redirect("/")
-
-# ===== START =====
-app.run(host="0.0.0.0", port=5000, debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)
