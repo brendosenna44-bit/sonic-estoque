@@ -1,4 +1,112 @@
-# SUBSTITUA APENAS O HTML DO PAINEL_HTML PELO ABAIXO
+from flask import Flask, render_template_string, request, redirect, session
+import sqlite3
+
+app = Flask(__name__)
+app.secret_key = "sonicprime123"
+
+# BANCO
+conn = sqlite3.connect("estoque.db", check_same_thread=False)
+cursor = conn.cursor()
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS produtos (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome TEXT,
+    quantidade INTEGER,
+    ativo INTEGER DEFAULT 1
+)
+""")
+conn.commit()
+
+LOGIN_HTML = """
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - SÔNIC PRIME</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:linear-gradient(135deg,#2563eb,#1e3a8a);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.box{
+background:white;
+padding:35px;
+border-radius:18px;
+width:340px;
+box-shadow:0 20px 40px rgba(0,0,0,.25);
+}
+
+h1{
+margin:0 0 8px 0;
+font-size:28px;
+color:#2563eb;
+}
+
+p{
+color:#666;
+margin-bottom:20px;
+}
+
+input{
+width:100%;
+padding:12px;
+margin-bottom:12px;
+border:1px solid #ddd;
+border-radius:10px;
+box-sizing:border-box;
+}
+
+button{
+width:100%;
+padding:12px;
+border:none;
+background:#2563eb;
+color:white;
+border-radius:10px;
+cursor:pointer;
+font-size:16px;
+}
+
+.erro{
+background:#fee2e2;
+color:#b91c1c;
+padding:10px;
+border-radius:10px;
+margin-bottom:12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+<h1>🚀 SÔNIC PRIME</h1>
+<p>Gestão Inteligente</p>
+
+{% if erro %}
+<div class="erro">Usuário ou senha inválidos</div>
+{% endif %}
+
+<form method="POST">
+<input name="usuario" placeholder="Usuário" required>
+<input name="senha" type="password" placeholder="Senha" required>
+<button>Entrar</button>
+</form>
+
+</div>
+
+</body>
+</html>
+"""
 
 PAINEL_HTML = """
 <!DOCTYPE html>
@@ -17,24 +125,8 @@ padding:20px;
 margin:0;
 }
 
-.layout{
-display:flex;
-gap:20px;
-flex-wrap:wrap;
-}
-
-.esquerda{
-flex:3;
-min-width:320px;
-}
-
-.direita{
-flex:1;
-min-width:260px;
-}
-
 .container{
-max-width:1300px;
+max-width:1100px;
 margin:auto;
 }
 
@@ -48,23 +140,9 @@ justify-content:space-between;
 align-items:center;
 }
 
-.card{
-background:#111827;
-padding:18px;
-border-radius:18px;
-margin-bottom:15px;
-}
-
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-}
-
-.numero{
-font-size:28px;
-font-weight:bold;
-margin-top:8px;
+.topo p{
+color:#94a3b8;
+margin:5px 0 0 0;
 }
 
 .form-linha{
@@ -127,29 +205,11 @@ color:white;
 padding:8px 12px;
 border-radius:8px;
 }
-
-.barra{
-height:12px;
-background:#1e293b;
-border-radius:20px;
-overflow:hidden;
-margin-top:8px;
-}
-
-.fill{
-height:12px;
-background:#2563eb;
-}
-
-@media(max-width:900px){
-.layout{
-flex-direction:column;
-}
-}
 </style>
 </head>
 
 <body>
+
 <div class="container">
 
 <div class="topo">
@@ -160,10 +220,6 @@ flex-direction:column;
 
 <a href="/logout" class="vermelho">Sair</a>
 </div>
-
-<div class="layout">
-
-<div class="esquerda">
 
 <form method="POST" action="/add">
 <div class="form-linha">
@@ -194,7 +250,9 @@ flex-direction:column;
 Normal
 {% endif %}
 </td>
-<td><a href="/lixeira/{{p[0]}}" class="vermelho">Excluir</a></td>
+<td>
+<a href="/lixeira/{{p[0]}}" class="vermelho">Excluir</a>
+</td>
 </tr>
 {% endfor %}
 </table>
@@ -214,62 +272,82 @@ Normal
 <tr>
 <td>{{l[1]}}</td>
 <td>{{l[2]}}</td>
-<td><a href="/restaurar/{{l[0]}}" class="verde">Restaurar</a></td>
+<td>
+<a href="/restaurar/{{l[0]}}" class="verde">Restaurar</a>
+</td>
 </tr>
 {% endfor %}
 </table>
 
 </div>
-
-<div class="direita">
-
-<div class="card">
-<h3>📊 Dashboard</h3>
-</div>
-
-<div class="grid">
-
-<div class="card">
-Produtos
-<div class="numero">{{produtos|length}}</div>
-</div>
-
-<div class="card">
-Lixeira
-<div class="numero">{{lixo|length}}</div>
-</div>
-
-<div class="card">
-Baixo
-<div class="numero">
-{{ produtos|selectattr(2,'lt',10)|list|length }}
-</div>
-</div>
-
-<div class="card">
-Total
-<div class="numero">
-{{ produtos|sum(attribute=2) }}
-</div>
-</div>
-
-</div>
-
-<div class="card">
-<h4>📈 Estoque Geral</h4>
-<div class="barra"><div class="fill" style="width:85%;"></div></div>
-</div>
-
-<div class="card">
-<h4>📉 Produtos Baixos</h4>
-<div class="barra"><div class="fill" style="width:35%;"></div></div>
-</div>
-
-</div>
-
-</div>
-
-</div>
 </body>
 </html>
 """
+
+@app.route("/", methods=["GET","POST"])
+def login():
+    if session.get("logado"):
+        return redirect("/painel")
+
+    erro = False
+
+    if request.method == "POST":
+        usuario = request.form["usuario"]
+        senha = request.form["senha"]
+
+        if usuario == "admin" and senha == "1234":
+            session["logado"] = True
+            return redirect("/painel")
+        else:
+            erro = True
+
+    return render_template_string(LOGIN_HTML, erro=erro)
+
+@app.route("/painel")
+def painel():
+    if not session.get("logado"):
+        return redirect("/")
+
+    cursor.execute("SELECT * FROM produtos WHERE ativo=1")
+    produtos = cursor.fetchall()
+
+    cursor.execute("SELECT * FROM produtos WHERE ativo=0")
+    lixo = cursor.fetchall()
+
+    return render_template_string(PAINEL_HTML, produtos=produtos, lixo=lixo)
+
+@app.route("/add", methods=["POST"])
+def add():
+    if not session.get("logado"):
+        return redirect("/")
+
+    nome = request.form["nome"]
+    quantidade = int(request.form["quantidade"])
+
+    cursor.execute(
+        "INSERT INTO produtos (nome, quantidade) VALUES (?,?)",
+        (nome, quantidade)
+    )
+    conn.commit()
+
+    return redirect("/painel")
+
+@app.route("/lixeira/<int:id>")
+def lixeira(id):
+    cursor.execute("UPDATE produtos SET ativo=0 WHERE id=?", (id,))
+    conn.commit()
+    return redirect("/painel")
+
+@app.route("/restaurar/<int:id>")
+def restaurar(id):
+    cursor.execute("UPDATE produtos SET ativo=1 WHERE id=?", (id,))
+    conn.commit()
+    return redirect("/painel")
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
+
+if __name__ == "__main__":
+    app.run(debug=True)
