@@ -25,6 +25,7 @@ LOGIN_HTML = """
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Login - SÔNIC PRIME</title>
+
 <style>
 body{
 margin:0;
@@ -35,6 +36,7 @@ display:flex;
 justify-content:center;
 align-items:center;
 }
+
 .box{
 background:white;
 padding:35px;
@@ -42,44 +44,27 @@ border-radius:18px;
 width:340px;
 box-shadow:0 20px 40px rgba(0,0,0,.25);
 }
+
 h1{
 margin:0 0 8px 0;
 font-size:28px;
 color:#2563eb;
 }
+
 p{
 color:#666;
 margin-bottom:20px;
 }
-.form-linha{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin-bottom:10px;
-}
 
 input{
-padding:10px;
-border:none;
+width:100%;
+padding:12px;
+margin-bottom:12px;
+border:1px solid #ddd;
 border-radius:10px;
-font-size:15px;
+box-sizing:border-box;
 }
 
-.nome{
-flex:2;
-min-width:220px;
-}
-
-.qtd{
-width:120px;
-}
-
-button{
-padding:10px 18px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-}
 button{
 width:100%;
 padding:12px;
@@ -90,6 +75,7 @@ border-radius:10px;
 cursor:pointer;
 font-size:16px;
 }
+
 .erro{
 background:#fee2e2;
 color:#b91c1c;
@@ -99,6 +85,7 @@ margin-bottom:12px;
 }
 </style>
 </head>
+
 <body>
 
 <div class="box">
@@ -109,13 +96,12 @@ margin-bottom:12px;
 <div class="erro">Usuário ou senha inválidos</div>
 {% endif %}
 
-<form method="POST" action="/add">
-<div class="form-linha">
-<input class="nome" name="nome" placeholder="Nome do produto" required>
-<input class="qtd" name="quantidade" type="number" placeholder="Qtd" required>
-<button class="azul">+ Novo Produto</button>
-</div>
+<form method="POST">
+<input name="usuario" placeholder="Usuário" required>
+<input name="senha" type="password" placeholder="Senha" required>
+<button>Entrar</button>
 </form>
+
 </div>
 
 </body>
@@ -129,6 +115,7 @@ PAINEL_HTML = """
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SÔNIC PRIME</title>
+
 <style>
 body{
 font-family:Arial;
@@ -137,7 +124,12 @@ color:white;
 padding:20px;
 margin:0;
 }
-.container{max-width:1100px;margin:auto;}
+
+.container{
+max-width:1100px;
+margin:auto;
+}
+
 .topo{
 background:#111827;
 padding:25px;
@@ -147,22 +139,47 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 }
+
+.topo p{
+color:#94a3b8;
+margin:5px 0 0 0;
+}
+
+.form-linha{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:15px;
+}
+
 input{
-padding:12px;
-width:100%;
-margin-bottom:10px;
+padding:10px;
 border:none;
 border-radius:10px;
+font-size:15px;
 }
+
+.nome{
+flex:2;
+min-width:220px;
+max-width:420px;
+}
+
+.qtd{
+width:110px;
+}
+
 button{
-padding:12px;
+padding:10px 16px;
 border:none;
 border-radius:10px;
 cursor:pointer;
 }
+
 .azul{background:#2563eb;color:white;}
 .vermelho{background:#dc2626;color:white;}
 .verde{background:#16a34a;color:white;}
+
 table{
 width:100%;
 border-collapse:collapse;
@@ -170,15 +187,18 @@ background:#111827;
 border-radius:18px;
 overflow:hidden;
 }
+
 th,td{
 padding:14px;
 border-bottom:1px solid #1e293b;
 text-align:left;
 }
+
 .alerta{
 color:#facc15;
 font-weight:bold;
 }
+
 a{
 text-decoration:none;
 color:white;
@@ -187,6 +207,7 @@ border-radius:8px;
 }
 </style>
 </head>
+
 <body>
 
 <div class="container">
@@ -201,12 +222,12 @@ border-radius:8px;
 </div>
 
 <form method="POST" action="/add">
-<input name="nome" placeholder="Nome do produto" required>
-<input name="quantidade" type="number" placeholder="Quantidade" required>
+<div class="form-linha">
+<input class="nome" name="nome" placeholder="Nome do produto" required>
+<input class="qtd" name="quantidade" type="number" placeholder="Qtd" required>
 <button class="azul">+ Novo Produto</button>
+</div>
 </form>
-
-<br>
 
 <h2>📦 Produtos</h2>
 
@@ -251,7 +272,9 @@ Normal
 <tr>
 <td>{{l[1]}}</td>
 <td>{{l[2]}}</td>
-<td><a href="/restaurar/{{l[0]}}" class="verde">Restaurar</a></td>
+<td>
+<a href="/restaurar/{{l[0]}}" class="verde">Restaurar</a>
+</td>
 </tr>
 {% endfor %}
 </table>
