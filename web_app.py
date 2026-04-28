@@ -4,7 +4,6 @@ import sqlite3
 app = Flask(__name__)
 app.secret_key = "sonicprime123"
 
-# BANCO
 conn = sqlite3.connect("estoque.db", check_same_thread=False)
 cursor = conn.cursor()
 
@@ -20,271 +19,182 @@ conn.commit()
 
 LOGIN_HTML = """
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Login - SÔNIC PRIME</title>
-
+<title>Login</title>
 <style>
 body{
-margin:0;
 font-family:Arial;
-background:linear-gradient(135deg,#2563eb,#1e3a8a);
-height:100vh;
+background:#2563eb;
 display:flex;
 justify-content:center;
 align-items:center;
+height:100vh;
+margin:0;
 }
-
 .box{
 background:white;
-padding:35px;
-border-radius:18px;
-width:340px;
-box-shadow:0 20px 40px rgba(0,0,0,.25);
+padding:30px;
+border-radius:15px;
+width:320px;
 }
-
-h1{
-margin:0 0 8px 0;
-font-size:28px;
-color:#2563eb;
-}
-
-p{
-color:#666;
-margin-bottom:20px;
-}
-
 input{
 width:100%;
-padding:12px;
-margin-bottom:12px;
-border:1px solid #ddd;
-border-radius:10px;
+padding:10px;
+margin-bottom:10px;
 box-sizing:border-box;
 }
-
 button{
 width:100%;
-padding:12px;
-border:none;
+padding:10px;
 background:#2563eb;
 color:white;
-border-radius:10px;
+border:none;
 cursor:pointer;
-font-size:16px;
 }
-
 .erro{
-background:#fee2e2;
-color:#b91c1c;
+background:#fecaca;
 padding:10px;
-border-radius:10px;
-margin-bottom:12px;
+margin-bottom:10px;
 }
 </style>
 </head>
-
 <body>
-
 <div class="box">
-<h1>🚀 SÔNIC PRIME</h1>
+<h2>SÔNIC PRIME</h2>
 <p>Gestão Inteligente</p>
 
 {% if erro %}
-<div class="erro">Usuário ou senha inválidos</div>
+<div class="erro">Login inválido</div>
 {% endif %}
 
 <form method="POST">
-<input name="usuario" placeholder="Usuário" required>
-<input name="senha" type="password" placeholder="Senha" required>
+<input name="usuario" placeholder="Usuário">
+<input name="senha" type="password" placeholder="Senha">
 <button>Entrar</button>
 </form>
-
 </div>
-
 </body>
 </html>
 """
 
 PAINEL_HTML = """
-# SUBSTITUA APENAS O HTML DO PAINEL_HTML PELO ABAIXO
-
-PAINEL_HTML = """
 <!DOCTYPE html>
-<html lang="pt-br">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SÔNIC PRIME</title>
-
+<title>Painel</title>
 <style>
 body{
 font-family:Arial;
 background:#0f172a;
 color:white;
-padding:20px;
 margin:0;
+padding:20px;
 }
-
+.topo{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#111827;
+padding:20px;
+border-radius:15px;
+margin-bottom:20px;
+}
+a{
+color:white;
+text-decoration:none;
+background:#dc2626;
+padding:8px 12px;
+border-radius:8px;
+}
+.form{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-bottom:20px;
+}
+input{
+padding:10px;
+border:none;
+border-radius:8px;
+}
+.nome{width:280px;}
+.qtd{width:100px;}
+button{
+padding:10px 14px;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
 .layout{
 display:flex;
 gap:20px;
 flex-wrap:wrap;
 }
-
 .esquerda{
 flex:3;
 min-width:320px;
 }
-
 .direita{
 flex:1;
-min-width:260px;
+min-width:250px;
 }
-
-.container{
-max-width:1300px;
-margin:auto;
-}
-
-.topo{
-background:#111827;
-padding:25px;
-border-radius:18px;
-margin-bottom:20px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
 .card{
 background:#111827;
-padding:18px;
-border-radius:18px;
+padding:15px;
+border-radius:15px;
 margin-bottom:15px;
 }
-
-.grid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px;
-}
-
-.numero{
-font-size:28px;
-font-weight:bold;
-margin-top:8px;
-}
-
-.form-linha{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin-bottom:15px;
-}
-
-input{
-padding:10px;
-border:none;
-border-radius:10px;
-font-size:15px;
-}
-
-.nome{
-flex:2;
-min-width:220px;
-max-width:420px;
-}
-
-.qtd{
-width:110px;
-}
-
-button{
-padding:10px 16px;
-border:none;
-border-radius:10px;
-cursor:pointer;
-}
-
-.azul{background:#2563eb;color:white;}
-.vermelho{background:#dc2626;color:white;}
-.verde{background:#16a34a;color:white;}
-
 table{
 width:100%;
 border-collapse:collapse;
 background:#111827;
-border-radius:18px;
+border-radius:15px;
 overflow:hidden;
 }
-
 th,td{
-padding:14px;
+padding:12px;
 border-bottom:1px solid #1e293b;
 text-align:left;
 }
-
-.alerta{
-color:#facc15;
-font-weight:bold;
+.baixo{
+color:yellow;
 }
-
-a{
-text-decoration:none;
-color:white;
-padding:8px 12px;
+.verde{
+background:#16a34a;
+padding:6px 10px;
 border-radius:8px;
 }
-
-.barra{
-height:12px;
-background:#1e293b;
-border-radius:20px;
-overflow:hidden;
-margin-top:8px;
-}
-
-.fill{
-height:12px;
-background:#2563eb;
-}
-
 @media(max-width:900px){
-.layout{
-flex-direction:column;
-}
+.layout{flex-direction:column;}
 }
 </style>
 </head>
-
 <body>
-<div class="container">
 
 <div class="topo">
 <div>
-<h1>🚀 SÔNIC PRIME</h1>
+<h2>SÔNIC PRIME</h2>
 <p>Gestão Inteligente</p>
 </div>
-
-<a href="/logout" class="vermelho">Sair</a>
+<a href="/logout">Sair</a>
 </div>
 
 <div class="layout">
 
 <div class="esquerda">
 
-<form method="POST" action="/add">
-<div class="form-linha">
+<form class="form" method="POST" action="/add">
 <input class="nome" name="nome" placeholder="Nome do produto" required>
-<input class="qtd" name="quantidade" type="number" placeholder="Qtd" required>
-<button class="azul">+ Novo Produto</button>
-</div>
+<input class="qtd" type="number" name="quantidade" placeholder="Qtd" required>
+<button>+ Novo Produto</button>
 </form>
 
-<h2>📦 Produtos</h2>
+<h3>Produtos</h3>
 
 <table>
 <tr>
@@ -300,19 +210,19 @@ flex-direction:column;
 <td>{{p[2]}}</td>
 <td>
 {% if p[2] < 10 %}
-<span class="alerta">Baixo</span>
+<span class="baixo">Baixo</span>
 {% else %}
 Normal
 {% endif %}
 </td>
-<td><a href="/lixeira/{{p[0]}}" class="vermelho">Excluir</a></td>
+<td><a href="/lixeira/{{p[0]}}">Excluir</a></td>
 </tr>
 {% endfor %}
 </table>
 
-<br><br>
+<br>
 
-<h2>🗑️ Lixeira</h2>
+<h3>Lixeira</h3>
 
 <table>
 <tr>
@@ -325,7 +235,7 @@ Normal
 <tr>
 <td>{{l[1]}}</td>
 <td>{{l[2]}}</td>
-<td><a href="/restaurar/{{l[0]}}" class="verde">Restaurar</a></td>
+<td><a class="verde" href="/restaurar/{{l[0]}}">Restaurar</a></td>
 </tr>
 {% endfor %}
 </table>
@@ -335,56 +245,25 @@ Normal
 <div class="direita">
 
 <div class="card">
-<h3>📊 Dashboard</h3>
-</div>
-
-<div class="grid">
-
-<div class="card">
-Produtos
-<div class="numero">{{produtos|length}}</div>
+<h3>Dashboard</h3>
+<p>Produtos: {{produtos|length}}</p>
+<p>Lixeira: {{lixo|length}}</p>
 </div>
 
 <div class="card">
-Lixeira
-<div class="numero">{{lixo|length}}</div>
-</div>
-
-<div class="card">
-Baixo
-<div class="numero">
-{{ produtos|selectattr(2,'lt',10)|list|length }}
-</div>
-</div>
-
-<div class="card">
-Total
-<div class="numero">
-{{ produtos|sum(attribute=2) }}
-</div>
-</div>
-
-</div>
-
-<div class="card">
-<h4>📈 Estoque Geral</h4>
-<div class="barra"><div class="fill" style="width:85%;"></div></div>
-</div>
-
-<div class="card">
-<h4>📉 Produtos Baixos</h4>
-<div class="barra"><div class="fill" style="width:35%;"></div></div>
+<p>Total Estoque</p>
+<h2>{{ total }}</h2>
 </div>
 
 </div>
 
 </div>
 
-</div>
 </body>
 </html>
 """
-@app.route("/", methods=["GET","POST"])
+
+@app.route("/", methods=["GET", "POST"])
 def login():
     if session.get("logado"):
         return redirect("/painel")
@@ -414,7 +293,14 @@ def painel():
     cursor.execute("SELECT * FROM produtos WHERE ativo=0")
     lixo = cursor.fetchall()
 
-    return render_template_string(PAINEL_HTML, produtos=produtos, lixo=lixo)
+    total = sum([p[2] for p in produtos]) if produtos else 0
+
+    return render_template_string(
+        PAINEL_HTML,
+        produtos=produtos,
+        lixo=lixo,
+        total=total
+    )
 
 @app.route("/add", methods=["POST"])
 def add():
