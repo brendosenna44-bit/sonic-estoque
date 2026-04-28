@@ -109,6 +109,9 @@ margin-bottom:12px;
 """
 
 PAINEL_HTML = """
+# SUBSTITUA APENAS O HTML DO PAINEL_HTML PELO ABAIXO
+
+PAINEL_HTML = """
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -125,8 +128,24 @@ padding:20px;
 margin:0;
 }
 
+.layout{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+}
+
+.esquerda{
+flex:3;
+min-width:320px;
+}
+
+.direita{
+flex:1;
+min-width:260px;
+}
+
 .container{
-max-width:1100px;
+max-width:1300px;
 margin:auto;
 }
 
@@ -140,9 +159,23 @@ justify-content:space-between;
 align-items:center;
 }
 
-.topo p{
-color:#94a3b8;
-margin:5px 0 0 0;
+.card{
+background:#111827;
+padding:18px;
+border-radius:18px;
+margin-bottom:15px;
+}
+
+.grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.numero{
+font-size:28px;
+font-weight:bold;
+margin-top:8px;
 }
 
 .form-linha{
@@ -205,11 +238,29 @@ color:white;
 padding:8px 12px;
 border-radius:8px;
 }
+
+.barra{
+height:12px;
+background:#1e293b;
+border-radius:20px;
+overflow:hidden;
+margin-top:8px;
+}
+
+.fill{
+height:12px;
+background:#2563eb;
+}
+
+@media(max-width:900px){
+.layout{
+flex-direction:column;
+}
+}
 </style>
 </head>
 
 <body>
-
 <div class="container">
 
 <div class="topo">
@@ -220,6 +271,10 @@ border-radius:8px;
 
 <a href="/logout" class="vermelho">Sair</a>
 </div>
+
+<div class="layout">
+
+<div class="esquerda">
 
 <form method="POST" action="/add">
 <div class="form-linha">
@@ -250,9 +305,7 @@ border-radius:8px;
 Normal
 {% endif %}
 </td>
-<td>
-<a href="/lixeira/{{p[0]}}" class="vermelho">Excluir</a>
-</td>
+<td><a href="/lixeira/{{p[0]}}" class="vermelho">Excluir</a></td>
 </tr>
 {% endfor %}
 </table>
@@ -272,18 +325,65 @@ Normal
 <tr>
 <td>{{l[1]}}</td>
 <td>{{l[2]}}</td>
-<td>
-<a href="/restaurar/{{l[0]}}" class="verde">Restaurar</a>
-</td>
+<td><a href="/restaurar/{{l[0]}}" class="verde">Restaurar</a></td>
 </tr>
 {% endfor %}
 </table>
 
 </div>
+
+<div class="direita">
+
+<div class="card">
+<h3>📊 Dashboard</h3>
+</div>
+
+<div class="grid">
+
+<div class="card">
+Produtos
+<div class="numero">{{produtos|length}}</div>
+</div>
+
+<div class="card">
+Lixeira
+<div class="numero">{{lixo|length}}</div>
+</div>
+
+<div class="card">
+Baixo
+<div class="numero">
+{{ produtos|selectattr(2,'lt',10)|list|length }}
+</div>
+</div>
+
+<div class="card">
+Total
+<div class="numero">
+{{ produtos|sum(attribute=2) }}
+</div>
+</div>
+
+</div>
+
+<div class="card">
+<h4>📈 Estoque Geral</h4>
+<div class="barra"><div class="fill" style="width:85%;"></div></div>
+</div>
+
+<div class="card">
+<h4>📉 Produtos Baixos</h4>
+<div class="barra"><div class="fill" style="width:35%;"></div></div>
+</div>
+
+</div>
+
+</div>
+
+</div>
 </body>
 </html>
 """
-
 @app.route("/", methods=["GET","POST"])
 def login():
     if session.get("logado"):
