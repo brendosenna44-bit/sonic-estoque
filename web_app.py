@@ -109,12 +109,13 @@ margin-bottom:12px;
 <div class="erro">Usuário ou senha inválidos</div>
 {% endif %}
 
-<form method="POST">
-<input name="usuario" placeholder="Usuário" required>
-<input name="senha" type="password" placeholder="Senha" required>
-<button>Entrar</button>
+<form method="POST" action="/add">
+<div class="form-linha">
+<input class="nome" name="nome" placeholder="Nome do produto" required>
+<input class="qtd" name="quantidade" type="number" placeholder="Qtd" required>
+<button class="azul">+ Novo Produto</button>
+</div>
 </form>
-
 </div>
 
 </body>
