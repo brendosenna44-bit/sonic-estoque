@@ -1,4 +1,3 @@
-```python
 from flask import Flask, render_template_string, request, redirect, session
 import sqlite3
 
@@ -306,4 +305,3 @@ def logout():
 
 if __name__ == "__main__":
     app.run(debug=True)
-```
