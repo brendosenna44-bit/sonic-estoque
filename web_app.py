@@ -52,11 +52,13 @@ color:#666;
 margin-bottom:20px;
 }
 input{
+padding:10px;
 width:100%;
-padding:12px;
-margin-bottom:12px;
-border:1px solid #ddd;
+max-width:320px;
+margin-bottom:10px;
+border:none;
 border-radius:10px;
+font-size:15px;
 }
 button{
 width:100%;
